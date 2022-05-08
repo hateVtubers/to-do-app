@@ -4,13 +4,14 @@ import { addTodo } from '../redux/features/todo/todoSlice';
 import TodoItem from './TodoItem';
 
 const Todos = () => {
-	const todos = useSelector(state => state.todos.todosList);
+	const todos = useSelector(state => state.todosData.list);
 	const dispatch = useDispatch();
 
 	const [inputValue, setInputValue] = useState('');
 
 	const handleClick = () => {
 		inputValue === '' ? alert('Write a todo') : dispatch(addTodo(inputValue));
+		setInputValue('');
 	};
 
 	return (
@@ -19,24 +20,27 @@ const Todos = () => {
 				<input
 					type='text'
 					className='form-control'
-					placeholder='Add a task'
-					aria-label='Add a task'
+					placeholder='Add a new task here...'
+					aria-label='Add a new task here...'
 					aria-describedby='button-addon2'
 					required
+					value={inputValue}
 					onChange={e => setInputValue(e.target.value)}
 				/>
 				<button className='btn btn-primary' type='button' onClick={handleClick}>
 					Add
 				</button>
 			</div>
+			{todos.length >= 1 && (
+				<div className='card'>
+					<ul className='list-group list-group-flush'>
+						{todos.map(({ name, id }) => (
+							<TodoItem key={id} name={name} id={id} />
+						))}
+					</ul>
+				</div>
+			)}
 
-			<div className='card'>
-				<ul className='list-group list-group-flush'>
-					{todos.map(({ name, id }) => (
-						<TodoItem key={id} name={name} id={id} />
-					))}
-				</ul>
-			</div>
 			<span>
 				You have {todos.length} {todos.length > 1 ? 'tasks' : 'task'}{' '}
 			</span>
