@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addTodo } from '../redux/features/todo/todoSlice';
 import TodoItem from './TodoItem';
@@ -7,31 +7,31 @@ const Todos = () => {
 	const todos = useSelector(state => state.todosData.list);
 	const dispatch = useDispatch();
 
-	const [inputValue, setInputValue] = useState('');
+	const handleSubmit = useCallback((e) => {
+    e.preventDefault();
+    const { todo } = Object.fromEntries(new FormData(e.target));
 
-	const handleClick = () => {
-		inputValue === '' ? alert('Write a todo') : dispatch(addTodo(inputValue));
-		setInputValue('');
-	};
+    dispatch(addTodo(todo));
+		e.target.reset();
+  }, [dispatch]);
 
 	return (
 		<section>
-			<div className='input-group mb-3'>
+			<form className='input-group mb-3' onSubmit={handleSubmit}>
 				<input
 					type='text'
 					className='form-control'
+					name='todo'
 					placeholder='Add a new task here...'
 					aria-label='Add a new task here...'
 					aria-describedby='button-addon2'
 					required
-					value={inputValue}
-					onChange={e => setInputValue(e.target.value)}
 				/>
-				<button className='btn btn-primary' type='button' onClick={handleClick}>
+				<button className='btn btn-primary'>
 					Add
 				</button>
-			</div>
-			{todos.length >= 1 && (
+			</form>
+			{!!todos.length && ( // 0 is falsy, https://developer.mozilla.org/en-US/docs/Glossary/Falsy
 				<div className='card'>
 					<ul className='list-group list-group-flush'>
 						{todos.map(({ name, id }) => (
